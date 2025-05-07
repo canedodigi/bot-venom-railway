@@ -1,16 +1,28 @@
-const venom = require('venom-bot');
+const fs = require('fs');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 
-venom
-  .create()
-  .then((client) => start(client))
-  .catch((error) => {
-    console.log(error);
-  });
+// Crea el cliente con guardado de sesión automático
+const client = new Client({
+  authStrategy: new LocalAuth(),
+  puppeteer: {
+    args: ['--no-sandbox'],
+    headless: true,
+  }
+});
 
-function start(client) {
-  client.onMessage((message) => {
-    if (message.body.toLowerCase() === 'hola') {
-      client.sendText(message.from, '¡Hola! Soy tu bot en la nube 🤖');
-    }
-  });
-}
+client.on('qr', (qr) => {
+  console.log('Escanea este QR en tu WhatsApp:');
+  console.log(qr);
+});
+
+client.on('ready', () => {
+  console.log('✅ Bot conectado a WhatsApp');
+});
+
+client.on('message', message => {
+  if (message.body.toLowerCase() === 'hola') {
+    message.reply('👋 ¡Hola! Soy tu bot en Railway 🚀');
+  }
+});
+
+client.initialize();
